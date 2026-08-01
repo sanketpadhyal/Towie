@@ -35,18 +35,6 @@ checksum:
   name_template: "checksums.txt"
   algorithm: sha256
 
-dockers:
-  - image_templates:
-      - "ghcr.io/sanketpadhyal/towie:{{ .Version }}-amd64"
-      - "ghcr.io/sanketpadhyal/towie:latest-amd64"
-    dockerfile: Dockerfile
-    use: buildx
-    build_flag_templates:
-      - "--platform=linux/amd64"
-      - "--build-arg=VERSION={{ .Version }}"
-      - "--build-arg=COMMIT={{ .Commit }}"
-      - "--build-arg=DATE={{ .Date }}"
-
 changelog:
   sort: asc
   filters:
