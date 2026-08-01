@@ -56,7 +56,7 @@ Modern backend development forces engineers to choose between two bad options:
 ### 1. Install
 
 ```bash
-go install github.com/sanketpadhyal/towie@latest
+go install github.com/sanketpadhyal/towie/cmd/towie@latest
 ```
 
 ### 2. Initialize Config
