@@ -1,0 +1,33 @@
+# towie.yaml — FastAPI / Python example
+
+server:
+  port: 8080
+
+backend:
+  target: http://localhost:8000  # uvicorn default port
+
+logging:
+  level: info
+  format: json
+
+cors:
+  enabled: true
+  allowed_origins:
+    - "https://your-frontend.com"
+  allowed_methods: [GET, POST, PUT, DELETE, PATCH, OPTIONS]
+  allowed_headers: [Content-Type, Authorization]
+
+security:
+  enabled: true
+  frame_options: SAMEORIGIN
+  content_type_nosniff: true
+  referrer_policy: strict-origin-when-cross-origin
+
+compression:
+  enabled: true
+  min_size: 1024
+
+health:
+  enabled: true
+  path: /health
+  probe_backend: true

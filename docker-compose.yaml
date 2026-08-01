@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  app:
+    image: node:20-alpine
+    working_dir: /app
+    command: node -e "
+      const http = require('http');
+      http.createServer((req, res) => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: 'hello from express', path: req.url }));
+      }).listen(3000, () => console.log('backend running on :3000'));
+    "
+    expose:
+      - "3000"
+
+  towie:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./configs/towie.yaml:/towie.yaml:ro
+    depends_on:
+      - app
+    environment:
+      - TOWIE_CONFIG=/towie.yaml

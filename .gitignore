@@ -1,0 +1,14 @@
+# Binaries & build outputs
+bin/
+dist/
+*.test
+*.out
+coverage.out
+
+# Runtime state
+*.pid
+
+# OS & IDE junk
+.DS_Store
+.vscode/
+.idea/

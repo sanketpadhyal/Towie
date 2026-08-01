@@ -1,0 +1,178 @@
+# towie.yaml — Towie Configuration Reference
+# https://github.com/sanketpadhyal/towie
+#
+# All fields are optional unless marked [required].
+# Run `towie validate` to check this file.
+
+# ─── Server ──────────────────────────────────────────────────────────────────
+
+server:
+  # Port to listen on. (default: 8080)
+  port: 8080
+
+  # Host/IP to bind to. Empty binds to all interfaces. (default: "")
+  host: ""
+
+  # Maximum time to read the full request including body. (default: 30s)
+  read_timeout: 30s
+
+  # Maximum time to write the response. (default: 30s)
+  write_timeout: 30s
+
+  # Maximum time to keep an idle keep-alive connection open. (default: 120s)
+  idle_timeout: 120s
+
+  # Time to wait for in-flight requests to complete on shutdown. (default: 10s)
+  shutdown_timeout: 10s
+
+  # Maximum request body size limit in bytes. 10485760 = 10MB. (default: 10485760)
+  max_body_size: 10485760
+
+# ─── Backend ─────────────────────────────────────────────────────────────────
+
+backend:
+  # [required] URL of the upstream backend.
+  # Examples:
+  #   http://localhost:3000      (Node.js, Python, Go)
+  #   http://app:8000            (Docker service name)
+  #   http://127.0.0.1:8080     (explicit loopback)
+  target: http://localhost:3000
+
+  # TCP connection timeout when dialing the backend. (default: 10s)
+  dial_timeout: 10s
+
+  # Timeout waiting for the first response header from the backend. (default: 30s)
+  response_header_timeout: 30s
+
+  # Reuse TCP connections to the backend. Disabling this adds TCP handshake
+  # latency to every request. (default: true)
+  keep_alive: true
+
+  # Maximum idle connections across all hosts in the connection pool. (default: 100)
+  max_idle_conns: 100
+
+  # Maximum idle connections per backend host. (default: 10)
+  max_idle_conns_per_host: 10
+
+# ─── Logging ─────────────────────────────────────────────────────────────────
+
+logging:
+  # Minimum log level to emit. (default: info)
+  # Options: debug | info | warn | error
+  level: info
+
+  # Log output format. (default: json)
+  # Options: json | text
+  # Use text for local development, json for production log aggregators.
+  format: json
+
+  # Where to write logs. (default: stdout)
+  # Options: stdout | stderr | /path/to/file
+  output: stdout
+
+# ─── Health ──────────────────────────────────────────────────────────────────
+
+health:
+  # Enable the health endpoint. (default: true)
+  enabled: true
+
+  # URL path for the health endpoint. (default: /health)
+  # Use this path in Kubernetes liveness/readiness probes and load balancer
+  # health checks. This path is NOT proxied to the backend.
+  path: /health
+
+  # Probe the backend with a HEAD request on each health check. (default: true)
+  # When true, the health response reflects backend reachability.
+  # When false, the endpoint always returns ok as long as Towie is running.
+  probe_backend: true
+
+# ─── Compression ─────────────────────────────────────────────────────────────
+
+compression:
+  # Enable gzip compression for eligible responses. (default: true)
+  # Compression is negotiated via the Accept-Encoding request header.
+  enabled: true
+
+  # Compression level. (default: default)
+  # Options: default | speed | size
+  level: default
+
+  # Minimum response size in bytes to compress. Responses smaller than this
+  # are sent uncompressed to avoid overhead. (default: 1024)
+  min_size: 1024
+
+# ─── CORS ────────────────────────────────────────────────────────────────────
+
+cors:
+  # Enable CORS header injection and preflight handling. (default: false)
+  enabled: false
+
+  # Origins allowed to make cross-origin requests.
+  # Use ["*"] to allow any origin (not recommended with credentials).
+  # Example: ["https://app.example.com", "https://staging.example.com"]
+  allowed_origins: []
+
+  # HTTP methods allowed in cross-origin requests.
+  allowed_methods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    - OPTIONS
+
+  # Headers allowed in cross-origin requests.
+  allowed_headers:
+    - Content-Type
+    - Authorization
+
+  # Headers the browser is allowed to read from the response.
+  expose_headers: []
+
+  # Allow cookies and credentials in cross-origin requests. (default: false)
+  # When true, allowed_origins must not contain "*".
+  allow_credentials: false
+
+  # How long (seconds) browsers may cache the preflight response. (default: 3600)
+  max_age: 3600
+
+# ─── Security ────────────────────────────────────────────────────────────────
+
+security:
+  # Enable security header injection. (default: true)
+  enabled: true
+
+  # HTTP Strict Transport Security — only enable when serving over HTTPS.
+  hsts:
+    enabled: false
+    max_age: 31536000          # 1 year in seconds
+    include_subdomains: false
+    preload: false
+
+  # Prevent your site from being embedded in iframes.
+  # Options: DENY | SAMEORIGIN | disabled (default: SAMEORIGIN)
+  frame_options: SAMEORIGIN
+
+  # Prevent browsers from MIME-sniffing the content type. (default: true)
+  content_type_nosniff: true
+
+  # Legacy XSS filter — deprecated in modern browsers. (default: false)
+  xss_protection: false
+
+  # Control how much referrer information is included in requests.
+  referrer_policy: strict-origin-when-cross-origin
+
+  # Feature/Permissions-Policy header value. Passed through as-is.
+  # Example: "camera=(), microphone=(), geolocation=()"
+  permissions_policy: ""
+
+# ─── Routes ──────────────────────────────────────────────────────────────────
+
+# Route-specific configuration. Routes are matched by path prefix.
+# All routes fall through to the default backend if no match is found.
+#
+# routes:
+#   - path: /api/v1
+#     methods: []                        # Empty = all methods
+#     backend:
+#       target: http://localhost:3001    # Override backend for this route
