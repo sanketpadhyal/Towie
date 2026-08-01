@@ -26,8 +26,13 @@ jobs:
       - name: Vet
         run: go vet ./...
 
-      - name: Test (race)
-        run: CGO_ENABLED=0 go test -race -count=1 -timeout=120s ./...
+      - name: Test
+        run: |
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            go test -race -count=1 -timeout=120s ./...
+          else
+            CGO_ENABLED=0 go test -count=1 -timeout=120s ./...
+          fi
 
       - name: Build
-        run: go build ./cmd/towie
+        run: CGO_ENABLED=0 go build ./cmd/towie
